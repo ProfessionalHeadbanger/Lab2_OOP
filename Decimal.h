@@ -15,6 +15,7 @@ private:
 	bool minus;
 	int Scale(int);
 	void Reduce();
+	void Merge(Decimal object, long int &left, long int &right, char oper);
 
 public:
 	Decimal();
@@ -44,7 +45,7 @@ public:
 	friend std::ostream& operator << (std::ostream&, Decimal&);
 	friend std::istream& operator >> (std::istream&, Decimal&);
 
-	Decimal& operator = (const Decimal&);
+	Decimal& operator = (const Decimal& object);
 };
 
 #endif

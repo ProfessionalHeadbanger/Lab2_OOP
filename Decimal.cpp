@@ -19,6 +19,90 @@ void Decimal::Reduce()
 	}
 }
 
+void Decimal::Merge(Decimal object, long int &left, long int &right, char oper)
+{
+	if (oper == '+' || oper == '-')
+	{
+		if (scale_koef > object.scale_koef)
+		{
+			if (minus)
+			{
+				left = -(abs(*integer * Scale(scale_koef)) + *fraction);
+			}
+			else
+			{
+				left = (abs(*integer * Scale(scale_koef)) + *fraction);
+			}
+			if (object.minus)
+			{
+				right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
+			}
+			else
+			{
+				right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
+			}
+		}
+
+		else if (object.scale_koef > scale_koef)
+		{
+			if (minus)
+			{
+				left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
+			}
+			else
+			{
+				left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
+			}
+			if (object.minus)
+			{
+				right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+			}
+			else
+			{
+				right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+			}
+		}
+		else if (scale_koef == object.scale_koef)
+		{
+			if (minus)
+			{
+				left = -abs((*integer * Scale(object.scale_koef) + *fraction));
+			}
+			else
+			{
+				left = abs((*integer * Scale(object.scale_koef) + *fraction));
+			}
+			if (object.minus)
+			{
+				right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+			}
+			else
+			{
+				right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+			}
+		}
+	}
+	else if (oper == '*' || oper == '/')
+	{
+		if (minus)
+		{
+			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
+		}
+		else
+		{
+			left = (abs(*integer * Scale(scale_koef)) + *fraction);
+		}
+		if (object.minus)
+		{
+			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+		}
+		else
+		{
+			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
+		}
+	}
+}
+
 Decimal::Decimal()
 {
 	integer = new long int;
@@ -123,64 +207,7 @@ Decimal Decimal::operator+(Decimal object)
 	Decimal temp;
 	temp.scale_koef = std::max(scale_koef, object.scale_koef);
 	long int left, right;
-	if (scale_koef > object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		else
-		{
-			left = (abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		if (object.minus)
-		{
-			right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-		else
-		{
-			right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-	}
-
-	else if (object.scale_koef > scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
-	else if (scale_koef == object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
+	Merge(object, left, right, '+');
 	*temp.integer = left + right;
 	if (*temp.integer < 0)
 	{
@@ -201,64 +228,7 @@ Decimal Decimal::operator-(Decimal object)
 	Decimal temp;
 	temp.scale_koef = std::max(scale_koef, object.scale_koef);
 	long int left, right;
-	if (scale_koef > object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		else
-		{
-			left = (abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		if (object.minus)
-		{
-			right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-		else
-		{
-			right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-	}
-
-	else if (object.scale_koef > scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
-	else if (scale_koef == object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
+	Merge(object, left, right, '-');
 	*temp.integer = left - right;
 	if (*temp.integer < 0)
 	{
@@ -278,22 +248,7 @@ Decimal Decimal::operator*(Decimal object)
 {
 	Decimal temp;
 	long int left, right;
-	if (minus)
-	{
-		left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-	}
-	else
-	{
-		left = (abs(*integer * Scale(scale_koef)) + *fraction);
-	}
-	if (object.minus)
-	{
-		right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-	}
-	else
-	{
-		right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-	}
+	Merge(object, left, right, '*');
 	*temp.integer = left * right;
 	if (*temp.integer < 0)
 	{
@@ -320,22 +275,7 @@ Decimal Decimal::operator/(Decimal object)
 {
 	Decimal temp;
 	long int left, right;
-	if (minus)
-	{
-		left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-	}
-	else
-	{
-		left = (abs(*integer * Scale(scale_koef)) + *fraction);
-	}
-	if (object.minus)
-	{
-		right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-	}
-	else
-	{
-		right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-	}
+	Merge(object, left, right, '/');
 	*temp.integer = left / right;
 	if (*temp.integer < 0)
 	{
@@ -361,64 +301,7 @@ Decimal Decimal::operator/(Decimal object)
 bool Decimal::operator>(Decimal object)
 {
 	long int left, right;
-	if (scale_koef > object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		else
-		{
-			left = (abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		if (object.minus)
-		{
-			right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-		else
-		{
-			right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-	}
-
-	else if (object.scale_koef > scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
-	else if (scale_koef == object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
+	Merge(object, left, right, '+');
 	if (left > right)
 	{
 		return true;
@@ -432,64 +315,7 @@ bool Decimal::operator>(Decimal object)
 bool Decimal::operator<(Decimal object)
 {
 	long int left, right;
-	if (scale_koef > object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		else
-		{
-			left = (abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		if (object.minus)
-		{
-			right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-		else
-		{
-			right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-	}
-
-	else if (object.scale_koef > scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
-	else if (scale_koef == object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
+	Merge(object, left, right, '+');
 	if (left < right)
 	{
 		return true;
@@ -503,64 +329,7 @@ bool Decimal::operator<(Decimal object)
 bool Decimal::operator==(Decimal object)
 {
 	long int left, right;
-	if (scale_koef > object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -(abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		else
-		{
-			left = (abs(*integer * Scale(scale_koef)) + *fraction);
-		}
-		if (object.minus)
-		{
-			right = -(abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-		else
-		{
-			right = (abs(*object.integer * Scale(scale_koef)) + *object.fraction * Scale(scale_koef - object.scale_koef));
-		}
-	}
-
-	else if (object.scale_koef > scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction * Scale(object.scale_koef - scale_koef)));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
-	else if (scale_koef == object.scale_koef)
-	{
-		if (minus)
-		{
-			left = -abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		else
-		{
-			left = abs((*integer * Scale(object.scale_koef) + *fraction));
-		}
-		if (object.minus)
-		{
-			right = -abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-		else
-		{
-			right = abs((*object.integer * Scale(object.scale_koef) + *object.fraction));
-		}
-	}
+	Merge(object, left, right, '+');
 	if (left == right)
 	{
 		return true;
